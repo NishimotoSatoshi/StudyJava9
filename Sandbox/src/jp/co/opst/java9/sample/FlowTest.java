@@ -9,29 +9,29 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Flow API ‚Ì‰‰K‚Å‚·B
+ * Flow API ã®æ¼”ç¿’ã§ã™ã€‚
  */
 public class FlowTest {
 
 	/**
-	 * ©ì‚ÌƒTƒuƒXƒNƒ‰ƒCƒo[B
+	 * è‡ªä½œã®ã‚µãƒ–ã‚¹ã‚¯ãƒ©ã‚¤ãƒãƒ¼ã€‚
 	 */
 	public class MySubscriber implements Flow.Subscriber<Integer> {
 
-		/** –¼‘OB */
+		/** åå‰ã€‚ */
 		private final String name;
 
-		/** I—¹ƒVƒOƒiƒ‹‚Ì‘—‚èæB */
+		/** çµ‚äº†ã‚·ã‚°ãƒŠãƒ«ã®é€ã‚Šå…ˆã€‚ */
 		private final CountDownLatch doneSignal;
 
-		/** w“Ç‘ÎÛB */
+		/** è³¼èª­å¯¾è±¡ã€‚ */
 		private Flow.Subscription subscription;
 
 		/**
-		 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^[B
+		 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼ã€‚
 		 * 
-		 * @param name –¼‘O
-		 * @param doneSignal I—¹ƒVƒOƒiƒ‹‚Ì‘—‚èæ
+		 * @param name åå‰
+		 * @param doneSignal çµ‚äº†ã‚·ã‚°ãƒŠãƒ«ã®é€ã‚Šå…ˆ
 		 */
 		public MySubscriber(String name, CountDownLatch doneSignal) {
 			this.name = name;
@@ -39,9 +39,9 @@ public class FlowTest {
 		}
 
 		/**
-		 * w“ÇŠJn‚Ìˆ—B
+		 * è³¼èª­é–‹å§‹æ™‚ã®å‡¦ç†ã€‚
 		 * 
-		 * @param subscription w“Ç‘ÎÛ
+		 * @param subscription è³¼èª­å¯¾è±¡
 		 */
 		@Override
 		public void onSubscribe(Flow.Subscription subscription) {
@@ -51,9 +51,9 @@ public class FlowTest {
 		}
 
 		/**
-		 * ƒAƒCƒeƒ€óM‚Ìˆ—B
+		 * ã‚¢ã‚¤ãƒ†ãƒ å—ä¿¡æ™‚ã®å‡¦ç†ã€‚
 		 * 
-		 * @param item ƒAƒCƒeƒ€
+		 * @param item ã‚¢ã‚¤ãƒ†ãƒ 
 		 */
 		@Override
 		public void onNext(Integer item) {
@@ -62,9 +62,9 @@ public class FlowTest {
 		}
 
 		/**
-		 * —áŠO”­¶‚Ìˆ—B
+		 * ä¾‹å¤–ç™ºç”Ÿæ™‚ã®å‡¦ç†ã€‚
 		 * 
-		 * @param throwable ”­¶‚µ‚½—áŠO
+		 * @param throwable ç™ºç”Ÿã—ãŸä¾‹å¤–
 		 */
 		@Override
 		public void onError(Throwable throwable) {
@@ -73,7 +73,7 @@ public class FlowTest {
 		}
 
 		/**
-		 * w“ÇI—¹‚Ìˆ—B
+		 * è³¼èª­çµ‚äº†æ™‚ã®å‡¦ç†ã€‚
 		 */
 		@Override
 		public void onComplete() {
@@ -83,19 +83,19 @@ public class FlowTest {
 	}
 
 	/**
-	 * ƒƒCƒ“B
+	 * ãƒ¡ã‚¤ãƒ³ã€‚
 	 * 
-	 * @param args g—p‚³‚ê‚È‚¢
-	 * @throws Throwable —áŠO‚ª”­¶‚µ‚½ê‡
+	 * @param args ä½¿ç”¨ã•ã‚Œãªã„
+	 * @throws Throwable ä¾‹å¤–ãŒç™ºç”Ÿã—ãŸå ´åˆ
 	 */
 	public static void main(String[] args) throws Throwable {
 		new FlowTest().test();
 	}
 
 	/**
-	 * Flow API ‚ÌƒTƒ“ƒvƒ‹‚ğÀs‚·‚éB
+	 * Flow API ã®ã‚µãƒ³ãƒ—ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹ã€‚
 	 * 
-	 * @throws InterruptedException ƒTƒuƒXƒNƒ‰ƒCƒo[‚Ìw“ÇI—¹‚ğ‘Ò‹@‚µ‚Ä‚¢‚é‚ÉAŠ„‚è‚İ‚ª”­¶‚µ‚½ê‡
+	 * @throws InterruptedException ã‚µãƒ–ã‚¹ã‚¯ãƒ©ã‚¤ãƒãƒ¼ã®è³¼èª­çµ‚äº†ã‚’å¾…æ©Ÿã—ã¦ã„ã‚‹æ™‚ã«ã€å‰²ã‚Šè¾¼ã¿ãŒç™ºç”Ÿã—ãŸå ´åˆ
 	 */
 	public void test() throws InterruptedException {
 		CountDownLatch doneSignal = new CountDownLatch(2);
@@ -111,9 +111,9 @@ public class FlowTest {
 	}
 
 	/**
-	 * ƒRƒ“ƒ\[ƒ‹‚ÉƒƒO‚ğo—Í‚·‚éB
+	 * ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ãƒ­ã‚°ã‚’å‡ºåŠ›ã™ã‚‹ã€‚
 	 * 
-	 * @param values o—Í‚·‚é’l
+	 * @param values å‡ºåŠ›ã™ã‚‹å€¤
 	 */
 	private void log(Object... values) {
 		LocalTime time = LocalTime.now();
