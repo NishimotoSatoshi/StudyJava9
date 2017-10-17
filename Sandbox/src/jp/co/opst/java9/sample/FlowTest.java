@@ -21,8 +21,8 @@ public class FlowTest {
 		/** 名前。 */
 		private final String name;
 
-		/** 終了シグナルの送り先。 */
-		private final CountDownLatch doneSignal;
+		/** 終了シグナル。 */
+		private final Runnable doneSignal;
 
 		/** 購読対象。 */
 		private Flow.Subscription subscription;
@@ -31,9 +31,9 @@ public class FlowTest {
 		 * コンストラクター。
 		 * 
 		 * @param name 名前
-		 * @param doneSignal 終了シグナルの送り先
+		 * @param doneSignal 終了シグナル
 		 */
-		public MySubscriber(String name, CountDownLatch doneSignal) {
+		public MySubscriber(String name, Runnable doneSignal) {
 			this.name = name;
 			this.doneSignal = doneSignal;
 		}
@@ -69,7 +69,7 @@ public class FlowTest {
 		@Override
 		public void onError(Throwable throwable) {
 			log(name, "onError", throwable);
-			doneSignal.countDown();
+			doneSignal.run();
 		}
 
 		/**
@@ -78,9 +78,15 @@ public class FlowTest {
 		@Override
 		public void onComplete() {
 			log(name, "onComplete");
-			doneSignal.countDown();
+			doneSignal.run();
 		}
 	}
+
+	/** 購読させるサブスクライバーの個数。 */
+	private static final int NUMBER_OF_SUBSCRIBERS = 2;
+
+	/** 購読させるアイテムの個数。 */
+	private static final int NUMBER_OF_ITEMS = 100;
 
 	/**
 	 * メイン。
@@ -98,16 +104,19 @@ public class FlowTest {
 	 * @throws InterruptedException サブスクライバーの購読終了を待機している時に、割り込みが発生した場合
 	 */
 	public void test() throws InterruptedException {
-		CountDownLatch doneSignal = new CountDownLatch(2);
+		CountDownLatch latch = new CountDownLatch(NUMBER_OF_SUBSCRIBERS);
 
 		try (SubmissionPublisher<Integer> publisher = new SubmissionPublisher<>()) {
-			publisher.subscribe(new MySubscriber("No.1", doneSignal));
-			publisher.subscribe(new MySubscriber("No.2", doneSignal));
-			IntStream.range(0, 1000).forEach(publisher::submit);
+			IntStream.rangeClosed(1, NUMBER_OF_SUBSCRIBERS)
+				.mapToObj(i -> new MySubscriber("No." + i, latch::countDown))
+				.forEach(publisher::subscribe);
+
+			IntStream.rangeClosed(1, NUMBER_OF_ITEMS)
+				.forEach(publisher::submit);
 		}
 
 		log("all items submitted");
-		doneSignal.await();
+		latch.await();
 	}
 
 	/**
