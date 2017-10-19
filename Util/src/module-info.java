@@ -1,3 +1,3 @@
-module jp.co.opst.java9.util {
+module opst.util {
 	exports jp.co.opst.java9.util;
 }
