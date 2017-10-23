@@ -31,7 +31,7 @@ class StreamTest {
 	}
 
 	/**
-	 * このメソッドは、先頭から、指定された条件が満たされる直前までの要素を捨てます。
+	 * このメソッドは、先頭から、指定された条件が満たされ続けているまでの要素を捨てます。
 	 * 
 	 * @see Stream#dropWhile(java.util.function.Predicate)
 	 */
