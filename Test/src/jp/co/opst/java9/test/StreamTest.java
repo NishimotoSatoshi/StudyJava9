@@ -51,25 +51,19 @@ class StreamTest {
 	 */
 	@Test
 	void testOfNullable() {
-		
-		Map<String, List<Integer>> map = Map.of(
-				"foo", List.of(1, 2, 3),
-				"baz", List.of(4, 5, 6)
-		);
+		Map<String, Integer> map = Map.of("foo", 1, "bar", 2);
 
 		List<Integer> actual = Stream.of("foo", "bar", "baz")
 				.flatMap(e -> Stream.ofNullable(map.get(e)))
-				.flatMap(List::stream)
 				.collect(Collectors.toList());
 
-		// うーん、こう書いた方がすっきりみえる……。
+		// 以下のコードでも実現可能だが、Stream::filterでnullガードをしないのがトレンドらしい。
 //		List<Integer> actual = Stream.of("foo", "bar", "baz")
 //				.map(map::get)
 //				.filter(Objects::nonNull)
-//				.flatMap(List::stream)
 //				.collect(Collectors.toList());
 
-		assertEquals(List.of(1, 2, 3, 4, 5, 6), actual);
+		assertEquals(List.of(1, 2), actual);
 	}
 
 	/**
@@ -82,7 +76,7 @@ class StreamTest {
 		List<String> actual = Stream.iterate("1234567", e -> e.length() >= 2, e -> e.substring(2))
 				.collect(Collectors.toList());
 
-		// これも、takeWhileと組み合わせるだけでいいような……。
+		// takeWhileと組み合わせるだけでいいような……。
 //		List<String> actual = Stream.iterate("1234567", e -> e.substring(2))
 //				.takeWhile(e -> e.length() >= 2)
 //				.collect(Collectors.toList());

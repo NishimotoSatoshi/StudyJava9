@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,13 +71,13 @@ class OptionalTest {
 	}
 
 	/**
-	 * このメソッドは、emptyの場合に別のOptionalを代替できるようになります。
+	 * このメソッドは、emptyの場合、別のOptionalで代替できるようになります。
 	 * 
 	 * @see Optional#or(java.util.function.Supplier)
 	 */
 	@Nested
 	class TestOr {
-		/** キーを数値に変換するマップ。 */
+		/** 変換マップ。 */
 		private final Map<String, String> map = Map.of("foo", "A");
 
 		/** テスト対象。 */
@@ -118,11 +119,21 @@ class OptionalTest {
 	 */
 	@Test
 	void testStream() {
-		List<String> actual = Stream.of("foo", null, "bar")
-			.map(Optional::ofNullable)
+		Map<String, Integer> map = Map.of("foo", 1, "bar", 2);
+		Function<String, Optional<Integer>> mapper = string -> Optional.ofNullable(map.get(string));
+
+		List<Integer> actual = Stream.of("foo", "bar", "baz")
+			.map(mapper)
 			.flatMap(Optional::stream)
 			.collect(Collectors.toList());
 
-		assertEquals(List.of("foo", "bar"), actual);
+		// 以下のコードでも実現可能だが、Optional::getを使わないのがトレンドらしい。
+//		List<Integer> actual = Stream.of("foo", "bar", "baz")
+//				.map(mapper)
+//				.filter(Optional::isPresent)
+//				.map(Optional::get)
+//				.collect(Collectors.toList());
+
+		assertEquals(List.of(1, 2), actual);
 	}
 }
