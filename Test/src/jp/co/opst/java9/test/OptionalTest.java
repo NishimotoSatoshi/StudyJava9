@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 class OptionalTest {
 
 	/**
-	 * このメソッドは、emptyの場合に実行する処理を記述できます。
+	 * このメソッドは、emptyの場合とemptyでない場合の両方に対して、実行する処理を指定します。
 	 * 
 	 * @see Optional#ifPresentOrElse(java.util.function.Consumer, Runnable)
 	 */
@@ -71,7 +71,7 @@ class OptionalTest {
 	}
 
 	/**
-	 * このメソッドは、emptyの場合、別のOptionalで代替できるようになります。
+	 * このメソッドは、emptyの場合、別のOptionalで代替します。
 	 * 
 	 * @see Optional#or(java.util.function.Supplier)
 	 */
