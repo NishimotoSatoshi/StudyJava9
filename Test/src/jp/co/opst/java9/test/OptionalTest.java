@@ -44,7 +44,7 @@ class OptionalTest {
 						() -> callee.accept(""));
 
 		/**
-		 * 前準備。
+		 * 前処理。
 		 */
 		@BeforeEach
 		void setUp() {
