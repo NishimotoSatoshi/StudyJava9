@@ -29,8 +29,8 @@ public class CompletableFutureTest {
 	/** テスト用一時フォルダ。 */
 	public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-	/** trueの時は、ファイルを作成しない。 */
-	public boolean skippedCreatingFile;
+	/** trueの時は、実際にはファイルは存在しない。 */
+	public boolean fileNotFound;
 
 	/** trueの時は、読み込みを遅延させる。 */
 	public boolean delayedReadingFile;
@@ -43,7 +43,7 @@ public class CompletableFutureTest {
 	@BeforeEach
 	void setUp() throws Throwable {
 		tempFolder.create();
-		skippedCreatingFile = false;
+		fileNotFound = false;
 		delayedReadingFile = false;
 	}
 
@@ -72,7 +72,7 @@ public class CompletableFutureTest {
 	 */
 	@Test
 	void testWhenFileNotFound() throws Throwable {
-		skippedCreatingFile = true;
+		fileNotFound = true;
 		ExecutionException exception = assertThrows(ExecutionException.class, () -> executeCompletableFuture().get());
 		assertTrue(Stream.iterate(exception, Objects::nonNull, Throwable::getCause).anyMatch(e -> e instanceof FileNotFoundException));
 	}
@@ -96,7 +96,7 @@ public class CompletableFutureTest {
 	 * </P>
 	 * 
 	 * <ol>
-	 * <li>{@link #createFile()}</li>
+	 * <li>{@link #getFile()}</li>
 	 * <li>{@link #readFirstLine(File)}</li>
 	 * <li>{@link Integer#parseInt(String)}</li>
 	 * </ol>
@@ -109,23 +109,23 @@ public class CompletableFutureTest {
 	 */
 	private CompletableFuture<Integer> executeCompletableFuture() {
 		return CompletableFuture
-			.supplyAsync(this::createFile)
+			.supplyAsync(this::getFile)
 			.thenApplyAsync(this::readFirstLine)
 			.thenApplyAsync(Integer::parseInt)
 			.completeOnTimeout(0, 3, TimeUnit.SECONDS);
 	}
 
 	/**
-	 * "100"と書き込まれたファイルを作成する。
+	 * 数値が書き込まれているファイルを取得する。
 	 * 
 	 * <p>
-	 * {@link #skippedCreatingFile} がtrueの時は、実際にはファイルを作成しない。
+	 * {@link #fileNotFound} がtrueの時は、実際にはファイルは存在しない。
 	 * </p>
 	 * 
 	 * @return 書き込んだファイル
 	 */
-	private File createFile() {
-		if (skippedCreatingFile) {
+	private File getFile() {
+		if (fileNotFound) {
 			return new File("dummy.txt");
 		}
 
