@@ -73,14 +73,9 @@ class StreamTest {
 	 */
 	@Test
 	void testIterate() {
-		List<String> actual = Stream.iterate("1234567", e -> e.length() >= 2, e -> e.substring(2))
+		List<String> actual = Stream.iterate("1234", e -> !e.isEmpty(), e -> e.substring(1))
 				.collect(Collectors.toList());
 
-		// takeWhileと組み合わせるだけでいいような……。
-//		List<String> actual = Stream.iterate("1234567", e -> e.substring(2))
-//				.takeWhile(e -> e.length() >= 2)
-//				.collect(Collectors.toList());
-
-		assertEquals(List.of("1234567", "34567", "567"), actual);
+		assertEquals(List.of("1234", "234", "34", "4"), actual);
 	}
 }
