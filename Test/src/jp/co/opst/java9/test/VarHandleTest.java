@@ -12,10 +12,6 @@ import org.junit.jupiter.api.Test;
 /**
  * VarHandleを試します。
  * 
- * <p>
- * なお、acquire/releaseの使い方は、まだ分かりません……。
- * </p>
- * 
  * @see VarHandle
  */
 class VarHandleTest {
@@ -24,13 +20,13 @@ class VarHandleTest {
 	private static VarHandle staticFieldHandle;
 
 	/** 標準的なフィールドのハンドラ。 */
-	private static VarHandle standardFirldHandle;
+	private static VarHandle standardFieldHandle;
 
 	/** 配列フィールドのハンドラ。 */
 	private static VarHandle arrayFieldHandle;
 
 	/** 配列フィールドの要素のハンドラ。 */
-	private static VarHandle arrayFieldElementHandle;
+	private static VarHandle arrayElementHandle;
 
 	/** ボラタイルフィールドのハンドラ。 */
 	private static VarHandle volatileFieldHandle;
@@ -44,9 +40,9 @@ class VarHandleTest {
 	static void setUpBeforeClass() throws Throwable {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		staticFieldHandle = lookup.findStaticVarHandle(VarHandleTest.class, "staticField", int.class);
-		standardFirldHandle = lookup.findVarHandle(VarHandleTest.class, "standardFirld", int.class);
+		standardFieldHandle = lookup.findVarHandle(VarHandleTest.class, "standardField", int.class);
 		arrayFieldHandle = lookup.findVarHandle(VarHandleTest.class, "arrayField", int[].class);
-		arrayFieldElementHandle = MethodHandles.arrayElementVarHandle(int[].class);
+		arrayElementHandle = MethodHandles.arrayElementVarHandle(int[].class);
 		volatileFieldHandle = lookup.findVarHandle(VarHandleTest.class, "volatileField", int.class);
 	}
 
@@ -54,7 +50,7 @@ class VarHandleTest {
 	private static int staticField;
 
 	/** 標準的なフィールド。 */
-	private int standardFirld;
+	private int standardField;
 
 	/** 配列フィールド。 */
 	private int[] arrayField;
@@ -68,7 +64,7 @@ class VarHandleTest {
 	@BeforeEach
 	void setUp() {
 		staticField = 0;
-		standardFirld = 0;
+		standardField = 0;
 		arrayField = null;
 		volatileField = 0;
 	}
@@ -94,9 +90,9 @@ class VarHandleTest {
 	 */
 	@Test
 	void testAccessToStandardFieldSimply() {
-		standardFirldHandle.set(this, 1);
-		assertEquals(1, standardFirldHandle.get(this));
-		assertEquals(1, standardFirld);
+		standardFieldHandle.set(this, 1);
+		assertEquals(1, standardFieldHandle.get(this));
+		assertEquals(1, standardField);
 	}
 
 	/**
@@ -121,9 +117,9 @@ class VarHandleTest {
 	@Test
 	void testAccessToArrayFieldElementSimply() {
 		arrayField = new int[] {0, 0};
-		arrayFieldElementHandle.set(arrayField, 1, 1);
-		assertEquals(0, arrayFieldElementHandle.get(arrayField, 0));
-		assertEquals(1, arrayFieldElementHandle.get(arrayField, 1));
+		arrayElementHandle.set(arrayField, 1, 1);
+		assertEquals(0, arrayElementHandle.get(arrayField, 0));
+		assertEquals(1, arrayElementHandle.get(arrayField, 1));
 		assertArrayEquals(new int[] {0, 1}, arrayField);
 	}
 
