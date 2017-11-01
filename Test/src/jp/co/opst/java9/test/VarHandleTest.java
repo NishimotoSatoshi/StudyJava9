@@ -16,19 +16,19 @@ import org.junit.jupiter.api.Test;
  */
 class VarHandleTest {
 
-	/** スタティックフィールドのハンドラ。 */
+	/** スタティックフィールドへのハンドラ。 */
 	private static VarHandle staticFieldHandle;
 
-	/** 標準的なフィールドのハンドラ。 */
+	/** 標準的なフィールドへのハンドラ。 */
 	private static VarHandle standardFieldHandle;
 
-	/** 配列フィールドのハンドラ。 */
+	/** 配列フィールドへのハンドラ。 */
 	private static VarHandle arrayFieldHandle;
 
-	/** 配列フィールドの要素のハンドラ。 */
+	/** 配列要素へのハンドラ。 */
 	private static VarHandle arrayElementHandle;
 
-	/** ボラタイルフィールドのハンドラ。 */
+	/** ボラタイルフィールドへのハンドラ。 */
 	private static VarHandle volatileFieldHandle;
 
 	/**
@@ -109,7 +109,7 @@ class VarHandleTest {
 	}
 
 	/**
-	 * 配列フィールドの要素への単純なアクセス。
+	 * 配列要素への単純なアクセス。
 	 * 
 	 * @see VarHandle#set(Object...)
 	 * @see VarHandle#get(Object...)
