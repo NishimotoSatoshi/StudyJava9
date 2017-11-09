@@ -1,6 +1,7 @@
-package jp.co.opst.java9.mod.req2;
+package jp.co.opst.java9.mod.req3;
 
-import jp.co.opst.java9.mod.exp2.Container;
+import jp.co.opst.java9.mod.exp1.Identifier;
+import jp.co.opst.java9.mod.exp3.Container;
 
 public class Sample {
 
@@ -11,5 +12,8 @@ public class Sample {
 		System.out.println(container.get("foo"));
 		System.out.println(container.get("bar"));
 		System.out.println(container.get("baz"));
+
+		Identifier<Integer> identifier = () -> 100;
+		System.out.println(identifier.getId());
 	}
 }
