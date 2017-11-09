@@ -6,7 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/ModExp4_1">
+	<classpathentry combineaccessrules="false" kind="src" path="/ModExp4Foo">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
@@ -16,7 +16,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/ModExp4_2">
+	<classpathentry combineaccessrules="false" kind="src" path="/ModExp4Bar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

@@ -1,4 +1,4 @@
-package jp.co.opst.java9.mod.exp4.core1;
+package jp.co.opst.java9.mod.exp4.foo;
 
 import jp.co.opst.java9.mod.exp4.NameService;
 
