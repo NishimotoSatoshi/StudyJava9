@@ -9,6 +9,7 @@ public class Sample {
 	public static void main(String[] args) {
 		ServiceLoader.load(NameServive.class)
 			.stream()
+			.parallel()
 			.map(ServiceLoader.Provider::get)
 			.map(NameServive::getName)
 			.forEach(System.out::println);
