@@ -19,7 +19,7 @@ imagesを除く全てのディレクトリは、Eclipseプロジェクトです�
 [Wiki - 02.Module System - requires transitiveを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、requires transitive指定しているモジュール。
 
 ### ModExp4
-[Wiki - 02.Module System - provides / usesを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、サービス・インターフェースを提供するモジュール。
+[Wiki - 02.Module System - provides / usesを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、サービスを提供するモジュール。
 
 ### ModExp4Foo
 [Wiki - 02.Module System - provides / usesを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、サービス・プロバイダーFooを提供するモジュール。
