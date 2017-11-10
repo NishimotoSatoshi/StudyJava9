@@ -1,7 +1,6 @@
 # StudyJava9
 [Wiki](https://github.com/NishimotoSatoshi/StudyJava9/wiki) も見てね。
 
-# 概要
 imagesを除く全てのディレクトリは、Eclipseプロジェクトです。
 
 なお、Mavenとかなんとかは使用してません。ごめんなさい。
