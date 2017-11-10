@@ -9,7 +9,7 @@ imagesを除く全てのディレクトリは、Eclipseプロジェクトです�
 ## ModExp1
 [Wiki - 02.Module System - exports / requiresを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、exports側。
 
-[Wiki - 02.Module System - requires transitiveを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、ModReq2およびModReq3に提供されるモジュール。
+[Wiki - 02.Module System - requires transitiveを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、ModExp2およびModExp3に提供されるモジュール。
 
 ## ModExp2
 [Wiki - 02.Module System - requires transitiveを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、requires transitiveを使用していないモジュール。
@@ -37,3 +37,9 @@ imagesを除く全てのディレクトリは、Eclipseプロジェクトです�
 
 ## ModReq4
 [Wiki - 02.Module System - provides / usesを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、サービスを利用するモジュール。
+
+## Test
+サンプル集。
+
+## images
+Wikiで使用している画像集。
