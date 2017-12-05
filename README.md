@@ -7,6 +7,12 @@ imagesを除く全てのディレクトリは、Eclipseプロジェクトです�
 
 ## ディレクトリの説明
 
+### ExerciseFlow
+Flow APIの演習。
+
+### ExerciseLibrary
+各演習によって生み出したライブラリ。
+
 ### ModExp1
 [Wiki - 02.Module System - exports / requiresを使用した例](https://github.com/NishimotoSatoshi/StudyJava9/wiki/02.Module-System)の、exports側。
 
