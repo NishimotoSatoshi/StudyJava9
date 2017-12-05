@@ -1,4 +1,4 @@
-package jp.co.opst.java9.lib.function;
+package jp.co.opst.java9.exercise.lib.function;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -8,18 +8,18 @@ import java.util.function.Predicate;
  * 処理の結果です。
  *
  * @param <R> 結果
- * @param <T> 例外
+ * @param <E> 例外
  */
-public final class Result<R, T extends Throwable> {
+public final class Result<R, E extends Exception> {
 
 	/**
 	 * 結果が存在しないリザルトを作成します
 	 * 
 	 * @param <R> 結果
-	 * @param <T> 例外
+	 * @param <E> 例外
 	 * @return リザルト
 	 */
-	public static <R, T extends Throwable> Result<R, T> empty() {
+	public static <R, E extends Exception> Result<R, E> empty() {
 		return new Result<>(Optional.empty(), Optional.empty());
 	}
 
@@ -27,11 +27,11 @@ public final class Result<R, T extends Throwable> {
 	 * 例外が発生しなかった時のリザルトを作成します
 	 * 
 	 * @param <R> 結果
-	 * @param <T> 例外
+	 * @param <E> 例外
 	 * @param result 結果
 	 * @return リザルト
 	 */
-	public static <R, T extends Throwable> Result<R, T> success(R result) {
+	public static <R, E extends Exception> Result<R, E> success(R result) {
 		return new Result<>(Optional.ofNullable(result), Optional.empty());
 	}
 
@@ -39,29 +39,29 @@ public final class Result<R, T extends Throwable> {
 	 * 例外が発生した時のリザルトを作成します
 	 * 
 	 * @param <R> 結果
-	 * @param <T> 例外
-	 * @param thrown 例外
+	 * @param <E> 例外
+	 * @param exception 例外
 	 * @return リザルト
 	 */
-	public static <R, T extends Throwable> Result<R, T> failure(T thrown) {
-		return new Result<>(Optional.empty(), Optional.of(thrown));
+	public static <R, E extends Exception> Result<R, E> failure(E exception) {
+		return new Result<>(Optional.empty(), Optional.of(exception));
 	}
 
 	/** 結果。 */
 	private final Optional<R> optionalResult;
 
 	/** 例外。 */
-	private final Optional<T> optionalThrown;
+	private final Optional<E> optionalException;
 
 	/**
 	 * コンストラクター。
 	 * 
 	 * @param optionalResult 結果
-	 * @param optionalThrown 例外
+	 * @param optionalException 例外
 	 */
-	private Result(Optional<R> optionalResult, Optional<T> optionalThrown) {
+	private Result(Optional<R> optionalResult, Optional<E> optionalException) {
 		this.optionalResult = optionalResult;
-		this.optionalThrown = optionalThrown;
+		this.optionalException = optionalException;
 	}
 
 	/**
@@ -78,8 +78,8 @@ public final class Result<R, T extends Throwable> {
 	 * 
 	 * @return 例外
 	 */
-	public Optional<T> thrown() {
-		return optionalThrown;
+	public Optional<E> exception() {
+		return optionalException;
 	}
 
 	/**
@@ -88,19 +88,19 @@ public final class Result<R, T extends Throwable> {
 	 * @param predicate 結果の条件
 	 * @return リザルト
 	 */
-	public Result<R, T> filter(Predicate<? super R> predicate) {
-		return new Result<>(optionalResult.filter(predicate), optionalThrown);
+	public Result<R, E> filter(Predicate<? super R> predicate) {
+		return new Result<>(optionalResult.filter(predicate), optionalException);
 	}
 
 	/**
 	 * 結果が存在する時は、指定されたプロセッサーを実行します。
 	 * 
 	 * @param <RR> 結果
-	 * @param <TT> 例外
+	 * @param <EE> 例外
 	 * @param processor 結果が存在する時に実行するプロセッサー
 	 * @return リザルト
 	 */
-	public <RR, TT extends Throwable> Result<RR, TT> map(ValueProcessor<R, RR, TT> processor) {
+	public <RR, EE extends Exception> Result<RR, EE> map(ProcessorWithArg<R, RR, EE> processor) {
 		return optionalResult
 			.map(processor::with)
 			.map(Processor::invoke)
@@ -131,7 +131,7 @@ public final class Result<R, T extends Throwable> {
 	 * @param action 結果を処理する関数
 	 * @return このインスタンス自身
 	 */
-	public Result<R, T> ifPresent(Consumer<? super R> action) {
+	public Result<R, E> ifPresent(Consumer<? super R> action) {
 		optionalResult.ifPresent(action);
 		return this;
 	}
@@ -142,7 +142,7 @@ public final class Result<R, T extends Throwable> {
 	 * @param action 結果を処理する関数
 	 * @return このインスタンス自身
 	 */
-	public Result<R, T> ifAbsent(Runnable action) {
+	public Result<R, E> ifAbsent(Runnable action) {
 		optionalResult.ifPresentOrElse(result -> {}, action);
 		return this;
 	}
@@ -151,11 +151,11 @@ public final class Result<R, T extends Throwable> {
 	 * 例外が存在する場合は、その例外を再送出します。
 	 * 
 	 * @return このインスタンス自身
-	 * @throws T 例外が存在する場合
+	 * @throws E 例外が存在する場合
 	 */
-	public Result<R, T> rethrow() throws T {
-		if (optionalThrown.isPresent()) {
-			throw optionalThrown.get();
+	public Result<R, E> rethrow() throws E {
+		if (optionalException.isPresent()) {
+			throw optionalException.get();
 		}
 
 		return this;

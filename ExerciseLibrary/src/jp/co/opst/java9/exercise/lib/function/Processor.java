@@ -1,27 +1,27 @@
-package jp.co.opst.java9.lib.function;
+package jp.co.opst.java9.exercise.lib.function;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * 例外を考慮した関数です。
+ * チェック例外を考慮した関数です。
  *
  * @param <R> 処理した結果
- * @param <T> 発生した例外
+ * @param <E> 発生したチェック例外
  */
 @FunctionalInterface
-public interface Processor<R, T extends Throwable> {
+public interface Processor<R, E extends Exception> {
 
 	/**
 	 * プロセッサーを作成します。
 	 * 
 	 * @param <R> 処理した結果
-	 * @param <T> 発生した例外
+	 * @param <E> 発生したチェック例外
 	 * @param processor プロセッサーの関数
 	 * @return プロセッサー
 	 */
-	public static <R, T extends Throwable> Processor<R, T> of(Processor<R, T> processor) {
+	public static <R, E extends Exception> Processor<R, E> of(Processor<R, E> processor) {
 		return processor;
 	}
 
@@ -29,27 +29,27 @@ public interface Processor<R, T extends Throwable> {
 	 * 処理を行います。
 	 * 
 	 * @return 処理した結果
-	 * @throws T 処理中に例外が発生した場合
+	 * @throws E 処理中にチェック例外が発生した場合
 	 */
-	public R process() throws T;
+	public R process() throws E;
 
 	/**
 	 * 処理を行って、リザルトを生成します。
 	 * 
 	 * <p>
-	 * 処理中にランタイム例外が発生した場合は、発生したランタイム例外を送出します。
+	 * 処理中に非チェック例外が発生した場合は、その例外を送出します。
 	 * </p>
 	 * 
 	 * @return リザルト
 	 */
-	public default Result<R, T> invoke() {
+	public default Result<R, E> invoke() {
 		try {
 			return Result.success(process());
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Throwable t) {
-			@SuppressWarnings("unchecked") T thrown = (T) t;
-			return Result.failure(thrown);
+		} catch (RuntimeException r) {
+			throw r;
+		} catch (Exception e) {
+			@SuppressWarnings("unchecked") E exception = (E) e;
+			return Result.failure(exception);
 		}
 	}
 
@@ -58,7 +58,7 @@ public interface Processor<R, T extends Throwable> {
 	 * 
 	 * @return ストリーム
 	 */
-	public default Stream<Result<R, T>> stream() {
+	public default Stream<Result<R, E>> stream() {
 		return Stream.generate(this::invoke);
 	}
 
@@ -71,9 +71,9 @@ public interface Processor<R, T extends Throwable> {
 	 * 
 	 * @param condition 繰り返し条件（この条件を満たしている間、処理を繰り返す）
 	 * @param action アクション
-	 * @throws T 処理中に例外が発生した場合
+	 * @throws E 処理中に例外が発生した場合
 	 */
-	public default void loopWhile(Predicate<? super R> condition, Consumer<? super R> action) throws T {
+	public default void loopWhile(Predicate<? super R> condition, Consumer<? super R> action) throws E {
 		stream()
 			.map(result -> result.filter(condition))
 			.peek(result -> result.ifPresent(action))
@@ -92,9 +92,9 @@ public interface Processor<R, T extends Throwable> {
 	 * 
 	 * @param condition 終了条件（この条件を満たしていない間、処理を繰り返す）
 	 * @param action アクション
-	 * @throws T 処理中に例外が発生した場合
+	 * @throws E 処理中に例外が発生した場合
 	 */
-	public default void loopUntil(Predicate<? super R> condition, Consumer<? super R> action) throws T {
+	public default void loopUntil(Predicate<? super R> condition, Consumer<? super R> action) throws E {
 		loopWhile(condition.negate(), action);
 	}
 
@@ -106,9 +106,9 @@ public interface Processor<R, T extends Throwable> {
 	 * </p>
 	 * 
 	 * @param action アクション
-	 * @throws T 処理中に例外が発生した場合
+	 * @throws E 処理中に例外が発生した場合
 	 */
-	public default void loopWhilePresent(Consumer<? super R> action) throws T {
+	public default void loopWhilePresent(Consumer<? super R> action) throws E {
 		loopWhile(result -> true, action);
 	}
 }
