@@ -1,8 +1,11 @@
 package jp.co.opst.java9.exercise.lib.function;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import jp.co.opst.java9.exercise.lib.exception.Try;
 
 /**
  * チェック例外を考慮した関数です。
@@ -34,6 +37,16 @@ public interface Processor<R, E extends Exception> {
 	public R process() throws E;
 
 	/**
+	 * 処理を行いますが、チェック例外が発生した場合は、非チェック例外にラッピングしてから送出します。
+	 * 
+	 * @param wrapper チェック例外を非チェック例外にラッピングする関数
+	 * @return 処理した結果
+	 */
+	public default <RE extends RuntimeException> R processUncheck(Function<Throwable, RE> wrapper) {
+		return Try.uncheck(this::process, wrapper);
+	}
+
+	/**
 	 * 処理を行って、リザルトを生成します。
 	 * 
 	 * <p>
@@ -56,59 +69,59 @@ public interface Processor<R, E extends Exception> {
 	/**
 	 * 処理を無限に繰り返すストリームを作成します。
 	 * 
+	 * @param wrapper チェック例外を非チェック例外にラッピングする関数
 	 * @return ストリーム
 	 */
-	public default Stream<Result<R, E>> stream() {
+	public default <RE extends RuntimeException> Stream<R> stream(Function<Throwable, RE> wrapper) {
+		return Stream.generate(() -> processUncheck(wrapper));
+	}
+
+	/**
+	 * 処理を無限に繰り返すストリームを作成します。
+	 * 
+	 * @return ストリーム
+	 */
+	public default Stream<Result<R, E>> resultStream() {
 		return Stream.generate(this::invoke);
 	}
 
 	/**
-	 * 処理の結果が条件に一致している間、アクションを繰り返します。
+	 * 処理の結果が存在し、かつ条件に一致している間、アクションを繰り返します。
 	 * 
-	 * <p>
-	 * ただし、結果が存在しない場合、または例外が発生した場合は、無条件に処理を終了します。
-	 * </p>
-	 * 
-	 * @param condition 繰り返し条件（この条件を満たしている間、処理を繰り返す）
+	 * @param predicate 繰り返し条件 （この条件を満たしている間、処理を繰り返す）
 	 * @param action アクション
-	 * @throws E 処理中に例外が発生した場合
+	 * @return 繰り返し条件を満たさなかった、最初のリザルト
 	 */
-	public default void loopWhile(Predicate<? super R> condition, Consumer<? super R> action) throws E {
-		stream()
-			.map(result -> result.filter(condition))
-			.peek(result -> result.ifPresent(action))
-			.filter(Result::isAbsent)
+	public default Result<R, E> loopWhile(Predicate<? super R> predicate, Consumer<? super R> action) {
+		return resultStream()
+			.peek(result -> result.ifResult(predicate, action))
+			.filter(result -> !result.isResult(predicate))
 			.findFirst()
-			.orElseGet(Result::empty)
-			.rethrow();
+			.orElseGet(Result::empty);
 	}
 
 	/**
-	 * 処理の結果が条件に一致するまで間、アクションを繰り返します。
+	 * 処理の結果が存在し、かつ条件に一致するまで間、アクションを繰り返します。
 	 * 
-	 * <p>
-	 * ただし、結果が存在しない場合、または例外が発生した場合は、無条件に処理を終了します。
-	 * </p>
-	 * 
-	 * @param condition 終了条件（この条件を満たしていない間、処理を繰り返す）
+	 * @param condition 終了条件 （この条件を満たしていない間、処理を繰り返す）
 	 * @param action アクション
-	 * @throws E 処理中に例外が発生した場合
+	 * @return 終了条件を満たした、最初のリザルト
 	 */
-	public default void loopUntil(Predicate<? super R> condition, Consumer<? super R> action) throws E {
-		loopWhile(condition.negate(), action);
+	public default Result<R, E> loopUntil(Predicate<? super R> condition, Consumer<? super R> action) {
+		return loopWhile(condition.negate(), action);
 	}
 
 	/**
 	 * 処理の結果が存在する間、アクションを繰り返します。
 	 * 
-	 * <p>
-	 * ただし、例外が発生した場合は、無条件に処理を終了します。
-	 * </p>
-	 * 
 	 * @param action アクション
-	 * @throws E 処理中に例外が発生した場合
+	 * @return 処理の結果が存在しなかった、最初のリザルト
 	 */
-	public default void loopWhilePresent(Consumer<? super R> action) throws E {
-		loopWhile(result -> true, action);
+	public default Result<R, E> loopWhilePresent(Consumer<? super R> action) {
+		return resultStream()
+			.peek(result -> result.ifPresent(action))
+			.filter(Result::isAbsent)
+			.findFirst()
+			.orElseGet(Result::empty);
 	}
 }

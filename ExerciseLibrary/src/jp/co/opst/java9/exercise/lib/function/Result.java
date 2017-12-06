@@ -2,6 +2,7 @@ package jp.co.opst.java9.exercise.lib.function;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -13,7 +14,7 @@ import java.util.function.Predicate;
 public final class Result<R, E extends Exception> {
 
 	/**
-	 * 結果が存在しないリザルトを作成します
+	 * 結果および例外が存在しないリザルトを作成します
 	 * 
 	 * @param <R> 結果
 	 * @param <E> 例外
@@ -83,7 +84,7 @@ public final class Result<R, E extends Exception> {
 	}
 
 	/**
-	 * 結果が条件に合わない場合、結果を消します。
+	 * 結果が条件に合わない場合、結果を削除します。
 	 * 
 	 * @param predicate 結果の条件
 	 * @return リザルト
@@ -108,6 +109,24 @@ public final class Result<R, E extends Exception> {
 	}
 
 	/**
+	 * 結果および例外が存在しないことを判定します。
+	 * 
+	 * @return 結果および例外が存在しない場合はtrue
+	 */
+	public boolean isEmpty() {
+		return !optionalResult.isPresent() && !optionalException.isPresent();
+	}
+
+	/**
+	 * 結果または例外が存在することを判定します。
+	 * 
+	 * @return 結果または例外が存在する場合はtrue
+	 */
+	public boolean isNotEmpty() {
+		return optionalResult.isPresent() || optionalException.isPresent();
+	}
+
+	/**
 	 * 結果が存在することを判定します。
 	 * 
 	 * @return 結果が存在する場合はtrue
@@ -126,9 +145,57 @@ public final class Result<R, E extends Exception> {
 	}
 
 	/**
-	 * 結果が存在する場合に処理を行います。
+	 * 結果が存在し、かつ条件と一致していることを判定します。
 	 * 
-	 * @param action 結果を処理する関数
+	 * @param predicate 条件
+	 * @return 結果が存在し、かつ条件と一致している場合はtrue
+	 */
+	public boolean isResult(Predicate<? super R> predicate) {
+		return optionalResult.filter(predicate).isPresent();
+	}
+
+	/**
+	 * 結果が存在し、かつ条件と一致していないことを判定します。
+	 * 
+	 * @param predicate 条件
+	 * @return 結果が存在し、かつ条件と一致していない場合はtrue
+	 */
+	public boolean isResultNot(Predicate<? super R> predicate) {
+		return optionalResult.filter(predicate.negate()).isPresent();
+	}
+
+	/**
+	 * 結果および例外が存在しない場合、処理を行います。
+	 * 
+	 * @param action 処理する関数
+	 * @return このインスタンス自身
+	 */
+	public Result<R, E> ifEmpty(Runnable action) {
+		if (isEmpty()) {
+			action.run();
+		}
+
+		return this;
+	}
+
+	/**
+	 * 結果または例外が存在する場合、処理を行います。
+	 * 
+	 * @param action 処理する関数
+	 * @return このインスタンス自身
+	 */
+	public Result<R, E> ifNotEmpty(Consumer<Result<R, E>> action) {
+		if (isNotEmpty()) {
+			action.accept(this);
+		}
+
+		return this;
+	}
+
+	/**
+	 * 結果が存在する場合、処理を行います。
+	 * 
+	 * @param action 処理する関数
 	 * @return このインスタンス自身
 	 */
 	public Result<R, E> ifPresent(Consumer<? super R> action) {
@@ -137,9 +204,9 @@ public final class Result<R, E extends Exception> {
 	}
 
 	/**
-	 * 結果が存在しない場合に処理を行います。
+	 * 結果が存在しない場合、処理を行います。
 	 * 
-	 * @param action 結果を処理する関数
+	 * @param action 処理する関数
 	 * @return このインスタンス自身
 	 */
 	public Result<R, E> ifAbsent(Runnable action) {
@@ -148,7 +215,31 @@ public final class Result<R, E extends Exception> {
 	}
 
 	/**
-	 * 例外が存在する場合は、その例外を再送出します。
+	 * 結果が存在し、かつ条件と一致している場合、処理を行います。
+	 * 
+	 * @param predicate 条件
+	 * @param action 処理する関数
+	 * @return このインスタンス自身
+	 */
+	public Result<R, E> ifResult(Predicate<? super R> predicate, Consumer<? super R> action) {
+		optionalResult.filter(predicate).ifPresent(action);
+		return this;
+	}
+
+	/**
+	 * 結果が存在し、かつ条件と一致していない場合、処理を行います。
+	 * 
+	 * @param predicate 条件
+	 * @param action 処理する関数
+	 * @return このインスタンス自身
+	 */
+	public Result<R, E> ifResultNot(Predicate<? super R> predicate, Consumer<? super R> action) {
+		optionalResult.filter(predicate.negate()).ifPresent(action);
+		return this;
+	}
+
+	/**
+	 * 例外が存在する場合、例外を再送出します。
 	 * 
 	 * @return このインスタンス自身
 	 * @throws E 例外が存在する場合
@@ -156,6 +247,22 @@ public final class Result<R, E extends Exception> {
 	public Result<R, E> rethrow() throws E {
 		if (optionalException.isPresent()) {
 			throw optionalException.get();
+		}
+
+		return this;
+	}
+
+	/**
+	 * 例外が存在する場合、別の例外にラッピングして再送出します。
+	 * 
+	 * @param <T> ラッピングする例外
+	 * @param wrapper 別の例外にラッピングする関数
+	 * @return このインスタンス自身
+	 * @throws T 例外が存在する場合
+	 */
+	public <T extends Throwable> Result<R, E> rethrow(Function<? super E, T> wrapper) throws T {
+		if (optionalException.isPresent()) {
+			throw optionalException.map(wrapper).get();
 		}
 
 		return this;

@@ -47,7 +47,7 @@ public class WebReader {
 		try (publisher) {
 			try (InputStream in = url.openStream()) {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-				Processor.of(reader::readLine).loopWhilePresent(publisher::publish);
+				Processor.of(reader::readLine).loopWhilePresent(publisher::publish).rethrow();
 			}
 		}
 
