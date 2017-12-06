@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 /**
  * サブスクライバーのコンテキストです。
  */
-public class Context {
+public class SubscriberContext {
 
 	/** リクエスト要求数。 */
 	private int demand;

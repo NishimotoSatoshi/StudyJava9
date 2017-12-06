@@ -21,7 +21,7 @@ public class SimplePublisher<T> implements AutoCloseable {
 	public static final class Builder<T> {
 
 		/** コンテキスト。 */
-		private final Context context = new Context();
+		private final SubscriberContext context = new SubscriberContext();
 
 		/** モデルリスト。 */
 		private final List<SubscriberModel<T>> models = new ArrayList<>();

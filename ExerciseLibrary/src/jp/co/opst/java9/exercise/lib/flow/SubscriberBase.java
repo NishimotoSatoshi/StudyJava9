@@ -12,7 +12,7 @@ import jp.co.opst.java9.exercise.lib.exception.Try;
 public class SubscriberBase<T> implements Flow.Subscriber<T> {
 
 	/** コンテキスト。 */
-	private final Context context;
+	private final SubscriberContext context;
 
 	/** モデル。 */
 	private final SubscriberModel<T> model;
@@ -26,7 +26,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	 * @param context コンテキスト
 	 * @param model モデル
 	 */
-	public SubscriberBase(Context context, SubscriberModel<T> model) {
+	public SubscriberBase(SubscriberContext context, SubscriberModel<T> model) {
 		this.context = context;
 		this.model = model;
 	}
