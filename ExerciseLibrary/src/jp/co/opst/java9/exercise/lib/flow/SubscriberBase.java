@@ -38,7 +38,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	 */
 	@Override
 	public final void onSubscribe(Flow.Subscription subscription) {
-		Try.uncheck(model::begin, IllegalStateException::new);
+		Try.uncheck(model::begin);
 		this.subscription = subscription;
 		subscription.request(context.getDemand());
 	}
@@ -50,7 +50,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	 */
 	@Override
 	public final void onNext(T item) {
-		Try.uncheck(() -> model.accept(item), IllegalStateException::new);
+		Try.uncheck(() -> model.accept(item));
 		subscription.request(context.getDemand());
 	}
 

@@ -1,7 +1,6 @@
 package jp.co.opst.java9.exercise.lib.function;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -39,11 +38,10 @@ public interface Processor<R, E extends Exception> {
 	/**
 	 * 処理を行いますが、チェック例外が発生した場合は、非チェック例外にラッピングしてから送出します。
 	 * 
-	 * @param wrapper チェック例外を非チェック例外にラッピングする関数
 	 * @return 処理した結果
 	 */
-	public default <RE extends RuntimeException> R processUncheck(Function<Throwable, RE> wrapper) {
-		return Try.uncheck(this::process, wrapper);
+	public default R processUncheck() {
+		return Try.uncheck(this::process);
 	}
 
 	/**
@@ -69,11 +67,10 @@ public interface Processor<R, E extends Exception> {
 	/**
 	 * 処理を無限に繰り返すストリームを作成します。
 	 * 
-	 * @param wrapper チェック例外を非チェック例外にラッピングする関数
 	 * @return ストリーム
 	 */
-	public default <RE extends RuntimeException> Stream<R> stream(Function<Throwable, RE> wrapper) {
-		return Stream.generate(() -> processUncheck(wrapper));
+	public default Stream<R> stream() {
+		return Stream.generate(() -> processUncheck());
 	}
 
 	/**
