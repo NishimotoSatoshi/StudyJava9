@@ -24,7 +24,7 @@ public class SimplePublisher<T> implements AutoCloseable {
 		private final SubscriberContext context = new SubscriberContext();
 
 		/** モデルリスト。 */
-		private final List<SubscriberModel<T>> models = new ArrayList<>();
+		private final List<SubscriberModel<? super T>> models = new ArrayList<>();
 
 		/**
 		 * コンストラクター。
@@ -70,7 +70,7 @@ public class SimplePublisher<T> implements AutoCloseable {
 		 * @param model モデル
 		 * @return このインスタンス自身
 		 */
-		public Builder<T> add(SubscriberModel<T> model) {
+		public Builder<T> add(SubscriberModel<? super T> model) {
 			models.add(model);
 			return this;
 		}

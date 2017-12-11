@@ -15,7 +15,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	private final SubscriberContext context;
 
 	/** モデル。 */
-	private final SubscriberModel<T> model;
+	private final SubscriberModel<? super T> model;
 
 	/** サブスクリプション。 */
 	private Flow.Subscription subscription;
@@ -26,7 +26,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	 * @param context コンテキスト
 	 * @param model モデル
 	 */
-	public SubscriberBase(SubscriberContext context, SubscriberModel<T> model) {
+	public SubscriberBase(SubscriberContext context, SubscriberModel<? super T> model) {
 		this.context = context;
 		this.model = model;
 	}

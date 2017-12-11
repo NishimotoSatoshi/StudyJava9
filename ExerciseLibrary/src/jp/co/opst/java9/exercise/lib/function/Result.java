@@ -101,7 +101,7 @@ public final class Result<R, E extends Exception> {
 	 * @param processor 結果が存在する時に実行するプロセッサー
 	 * @return リザルト
 	 */
-	public <RR, EE extends Exception> Result<RR, EE> map(ProcessorWithArg<R, RR, EE> processor) {
+	public <RR, EE extends Exception> Result<RR, EE> map(ProcessorWithArg<? super R, RR, EE> processor) {
 		return optionalResult
 			.map(processor::with)
 			.map(Processor::invoke)
@@ -184,7 +184,7 @@ public final class Result<R, E extends Exception> {
 	 * @param action 処理する関数
 	 * @return このインスタンス自身
 	 */
-	public Result<R, E> ifNotEmpty(Consumer<Result<R, E>> action) {
+	public Result<R, E> ifNotEmpty(Consumer<Result<? super R, ? super E>> action) {
 		if (isNotEmpty()) {
 			action.accept(this);
 		}
