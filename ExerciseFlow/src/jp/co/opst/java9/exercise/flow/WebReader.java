@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import jp.co.opst.java9.exercise.lib.exception.Generator;
 import jp.co.opst.java9.exercise.lib.flow.SimplePublisher;
-import jp.co.opst.java9.exercise.lib.function.Processor;
 
 /**
  * Flow APIを使って、ICP/IP通信をした結果を、標準出力とファイルに書き込む演習です。
@@ -47,7 +47,7 @@ public class WebReader {
 		try (publisher) {
 			try (InputStream in = url.openStream()) {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-				Processor.of(reader::readLine).loopWhilePresent(publisher::publish).rethrow();
+				Generator.of(reader::readLine).whilePresent(publisher::publish).rethrow();
 			}
 		}
 

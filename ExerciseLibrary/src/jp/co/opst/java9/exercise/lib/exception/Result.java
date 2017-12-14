@@ -1,4 +1,4 @@
-package jp.co.opst.java9.exercise.lib.function;
+package jp.co.opst.java9.exercise.lib.exception;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -101,10 +101,10 @@ public final class Result<R, E extends Exception> {
 	 * @param processor 結果が存在する時に実行するプロセッサー
 	 * @return リザルト
 	 */
-	public <RR, EE extends Exception> Result<RR, EE> map(ProcessorWithArg<? super R, RR, EE> processor) {
+	public <RR, EE extends Exception> Result<RR, EE> map(Processor<? super R, RR, EE> processor) {
 		return optionalResult
-			.map(processor::with)
-			.map(Processor::invoke)
+			.map(processor::normalize)
+			.map(Generator::get)
 			.orElseGet(Result::empty);
 	}
 
@@ -255,12 +255,12 @@ public final class Result<R, E extends Exception> {
 	/**
 	 * 例外が存在する場合、別の例外にラッピングして再送出します。
 	 * 
-	 * @param <T> ラッピングする例外
+	 * @param <EE> ラッピングする例外
 	 * @param wrapper 別の例外にラッピングする関数
 	 * @return このインスタンス自身
-	 * @throws T 例外が存在する場合
+	 * @throws EE 例外が存在する場合
 	 */
-	public <T extends Throwable> Result<R, E> rethrow(Function<? super E, T> wrapper) throws T {
+	public <EE extends Exception> Result<R, E> rethrow(Function<? super E, EE> wrapper) throws EE {
 		if (optionalException.isPresent()) {
 			throw optionalException.map(wrapper).get();
 		}
