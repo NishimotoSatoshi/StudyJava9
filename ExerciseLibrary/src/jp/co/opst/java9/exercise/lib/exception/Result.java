@@ -104,7 +104,7 @@ public final class Result<R, E extends Exception> {
 	public <RR, EE extends Exception> Result<RR, EE> map(Processor<? super R, RR, EE> processor) {
 		return optionalResult
 			.map(processor::normalize)
-			.map(Generator::get)
+			.map(Generator::getResult)
 			.orElseGet(Result::empty);
 	}
 

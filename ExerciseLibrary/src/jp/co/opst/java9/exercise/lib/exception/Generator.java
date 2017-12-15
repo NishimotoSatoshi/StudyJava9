@@ -42,7 +42,7 @@ public interface Generator<R, E extends Exception> {
 	 * 
 	 * @return リザルト
 	 */
-	public default Result<R, E> get() {
+	public default Result<R, E> getResult() {
 		try {
 			return Result.success(generate());
 		} catch (RuntimeException r) {
@@ -100,7 +100,7 @@ public interface Generator<R, E extends Exception> {
 	 * @return リザルトを返すストリーム
 	 */
 	public default Stream<Result<R, E>> stream() {
-		return Stream.generate(this::get);
+		return Stream.generate(this::getResult);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public interface Generator<R, E extends Exception> {
 	 * @return 処理の結果が存在しなくなった時のリザルト
 	 */
 	public default Result<R, E> whilePresent(Consumer<? super R> then) {
-		return Stream.generate(this::get)
+		return Stream.generate(this::getResult)
 			.peek(result -> result.ifPresent(then))
 			.filter(Result::isAbsent)
 			.findFirst()

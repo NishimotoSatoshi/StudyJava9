@@ -75,12 +75,7 @@ public class FileOutModel<T> implements SubscriberModel<T> {
 	 */
 	@Override
 	public void end() {
-		if (writer != null) {
-			Try.ignore(writer::flush);
-		}
-
-		if (out != null) {
-			Try.ignore(out::close);
-		}
+		Try.of(writer).ignore(BufferedWriter::flush);
+		Try.of(out).ignore(OutputStream::close);
 	}
 }
