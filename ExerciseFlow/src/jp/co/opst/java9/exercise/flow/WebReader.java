@@ -3,11 +3,10 @@ package jp.co.opst.java9.exercise.flow;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import jp.co.opst.java9.exercise.lib.exception.Generator;
+import jp.co.opst.java9.exercise.lib.exception.Resource;
 import jp.co.opst.java9.exercise.lib.flow.SimplePublisher;
 
 /**
@@ -38,17 +37,18 @@ public class WebReader {
 	 * @throws IOException ICP/IP通信に失敗した場合
 	 * @throws InterruptedException サブスクライバーの終了待機中に、割り込みが発生した場合
 	 */
-	public void read(URL url, File file) throws IOException, InterruptedException {
+	public void read(URL url, File file) throws Exception {
 		SimplePublisher<String> publisher = SimplePublisher.<String>buider()
 			.add(new FileOutModel<>(file))
 			.add(new SystemOutModel<>())
 			.build();
 
 		try (publisher) {
-			try (InputStream in = url.openStream()) {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-				Generator.of(reader::readLine).whilePresent(publisher::publish).rethrow();
-			}
+			Resource.of(url::openStream)
+				.map(InputStreamReader::new)
+				.map(BufferedReader::new)
+				.whilePresent(BufferedReader::readLine)
+				.accept(publisher::publish);
 		}
 
 		publisher.await();

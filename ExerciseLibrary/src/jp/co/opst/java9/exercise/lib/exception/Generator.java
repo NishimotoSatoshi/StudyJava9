@@ -2,6 +2,7 @@ package jp.co.opst.java9.exercise.lib.exception;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -23,6 +24,29 @@ public interface Generator<R, E extends Exception> {
 	 */
 	public static <R, E extends Exception> Generator<R, E> of(Generator<R, E> action) {
 		return action;
+	}
+
+	/**
+	 * サプライヤーからジェネレーターを作成します。
+	 * 
+	 * @param <R> 結果
+	 * @param supplier サプライヤー
+	 * @return ジェネレーター
+	 */
+	public static <R> Generator<R, RuntimeException> from(Supplier<R> supplier) {
+		return supplier::get;
+	}
+
+	/**
+	 * 常に同じ値を返すジェネレーターを作成します。
+	 * 
+	 * @param <R> 結果
+	 * @param <E> 処理中に発しうる例外（実際には発生しない）
+	 * @param value 返す値
+	 * @return 常に同じ値を返すジェネレーター
+	 */
+	public static <R, E extends Exception> Generator<R, E> fix(R value) {
+		return () -> value;
 	}
 
 	/**
