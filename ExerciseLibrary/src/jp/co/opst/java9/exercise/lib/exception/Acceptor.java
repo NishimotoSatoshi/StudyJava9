@@ -54,33 +54,6 @@ public interface Acceptor<V, E extends Exception> {
 	public void accept(V value) throws E;
 
 	/**
-	 * 処理を行います。
-	 * 
-	 * <p>
-	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
-	 * 非チェック例外が発生した時は、そのまま送出されます。
-	 * </p>
-	 * 
-	 * @param value 引数
-	 */
-	public default void uncheck(V value) {
-		normalize(value).uncheck();
-	}
-
-	/**
-	 * 処理を行います。
-	 * 
-	 * <p>
-	 * 例外が発生した時は、無視します。
-	 * </p>
-	 * 
-	 * @param value 引数
-	 */
-	public default void ignore(V value) {
-		normalize(value).ignore();
-	}
-
-	/**
 	 * 他のアクセプターとまとめます。
 	 * 
 	 * @param after 他のアクセプター
@@ -105,5 +78,47 @@ public interface Acceptor<V, E extends Exception> {
 			accept(value);
 			return null;
 		};
+	}
+
+	/**
+	 * 処理を行い、リザルトを生成します。
+	 * 
+	 * <p>
+	 * 非チェック例外が発生した時は、そのまま送出されます。
+	 * </p>
+	 * 
+	 * @param <R> 結果
+	 * @param value
+	 * @return リザルト
+	 */
+	public default <R> Result<R, E> getResult(V value) {
+		return this.<R>normalize(value).getResult();
+	}
+
+	/**
+	 * 処理を行います。
+	 * 
+	 * <p>
+	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
+	 * 非チェック例外が発生した時は、そのまま送出されます。
+	 * </p>
+	 * 
+	 * @param value 引数
+	 */
+	public default void uncheck(V value) {
+		normalize(value).uncheck();
+	}
+
+	/**
+	 * 処理を行います。
+	 * 
+	 * <p>
+	 * 例外が発生した時は、無視します。
+	 * </p>
+	 * 
+	 * @param value 引数
+	 */
+	public default void ignore(V value) {
+		normalize(value).ignore();
 	}
 }

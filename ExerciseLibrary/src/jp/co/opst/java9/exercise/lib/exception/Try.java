@@ -39,7 +39,7 @@ public final class Try<T> {
 	 * @return リザルト
 	 */
 	public static <R, E extends Exception> Result<R, E> getResult(Invoker<E> action) {
-		return action.<R>normalize().getResult();
+		return action.getResult();
 	}
 
 	/**
@@ -69,7 +69,7 @@ public final class Try<T> {
 	 * @param action 処理を行う関数
 	 */
 	public static void uncheck(Invoker<?> action) {
-		action.normalize().uncheck();
+		action.uncheck();
 	}
 
 	/**
@@ -97,34 +97,34 @@ public final class Try<T> {
 	 * @param action 処理を行う関数
 	 */
 	public static void ignore(Invoker<?> action) {
-		action.normalize().ignore();
+		action.ignore();
 	}
 
 	/**
-	 * 実行するオブジェクトを指定して、トライを作成します。
+	 * オブジェクトを指定して、トライを作成します。
 	 * 
-	 * @param <T> 実行するオブジェクト
-	 * @param target 実行するオブジェクト
+	 * @param <T> オブジェクト
+	 * @param target オブジェクト
 	 * @return トライ
 	 */
 	public static <T> Try<T> of(T target) {
 		return new Try<>(target);
 	}
 
-	/** 実行するオブジェクト。 */
+	/** オブジェクト。 */
 	private final Optional<T> optionalTarget;
 
 	/**
 	 * コンストラクター。
 	 * 
-	 * @param target 実行するオブジェクト
+	 * @param target オブジェクト
 	 */
 	private Try(T target) {
 		this.optionalTarget = Optional.ofNullable(target);
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行い、リザルトを生成します。
+	 * オブジェクトがnullでない場合のみ処理を行い、リザルトを生成します。
 	 * 
 	 * <p>
 	 * 非チェック例外が発生した時は、そのまま送出されます。
@@ -140,7 +140,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行い、リザルトを生成します。
+	 * オブジェクトがnullでない場合のみ処理を行い、リザルトを生成します。
 	 * 
 	 * <p>
 	 * 非チェック例外が発生した時は、そのまま送出されます。
@@ -156,7 +156,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行います。
+	 * オブジェクトがnullでない場合のみ処理を行います。
 	 * 
 	 * <p>
 	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
@@ -172,7 +172,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行います。
+	 * オブジェクトがnullでない場合のみ処理を行います。
 	 * 
 	 * <p>
 	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
@@ -186,7 +186,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行います。
+	 * オブジェクトがnullでない場合のみ処理を行います。
 	 * 
 	 * <p>
 	 * 例外が発生した時は、結果がnullになります。
@@ -201,7 +201,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行います。
+	 * オブジェクトがnullでない場合のみ処理を行います。
 	 * 
 	 * <p>
 	 * 例外が発生しても無視します。
@@ -214,7 +214,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行い、リザルトを生成します。
+	 * オブジェクトがnullでない場合のみ処理を行い、リザルトを生成します。
 	 * 
 	 * <p>
 	 * 非チェック例外が発生した時は、そのまま送出されます。
@@ -222,7 +222,7 @@ public final class Try<T> {
 	 * 
 	 * @param <R> 結果
 	 * @param <E> 処理中に発しうる例外
-	 * @param mapper 実行するオブジェクトをジェネレーターに変換する関数
+	 * @param mapper オブジェクトをジェネレーターに変換する関数
 	 * @return リザルト
 	 */
 	private <R, E extends Exception> Result<R, E> getResultOfTarget(Function<? super T, Generator<R, E>> mapper) {
@@ -233,7 +233,7 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行います。
+	 * オブジェクトがnullでない場合のみ処理を行います。
 	 * 
 	 * <p>
 	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
@@ -241,7 +241,7 @@ public final class Try<T> {
 	 * </p>
 	 * 
 	 * @param <R> 結果
-	 * @param mapper 実行するオブジェクトをジェネレーターに変換する関数
+	 * @param mapper オブジェクトをジェネレーターに変換する関数
 	 * @return 結果
 	 */
 	private <R> R uncheckAndGetValue(Function<? super T, Generator<R, ?>> mapper) {
@@ -252,14 +252,14 @@ public final class Try<T> {
 	}
 
 	/**
-	 * 実行するオブジェクトがnullでない場合のみ処理を行います。
+	 * オブジェクトがnullでない場合のみ処理を行います。
 	 * 
 	 * <p>
 	 * 例外が発生しても無視します。
 	 * </p>
 	 * 
 	 * @param <R> 結果
-	 * @param mapper 実行するオブジェクトをジェネレーターに変換する関数
+	 * @param mapper オブジェクトをジェネレーターに変換する関数
 	 * @return 結果
 	 */
 	private <R> R ignoreAndGetValue(Function<? super T, Generator<R, ?>> mapper) {

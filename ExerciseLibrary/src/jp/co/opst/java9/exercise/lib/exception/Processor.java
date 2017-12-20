@@ -28,6 +28,8 @@ public interface Processor<V, R, E extends Exception> {
 	/**
 	 * ファンクションからプロセッサーを作成します。
 	 * 
+	 * @param <V> 引数
+	 * @param <R> 結果
 	 * @param function ファンクション
 	 * @return プロセッサー
 	 */
@@ -56,6 +58,40 @@ public interface Processor<V, R, E extends Exception> {
 	public R process(V value) throws E;
 
 	/**
+	 * 結果をさらに処理するプロセッサーと連結します。
+	 * 
+	 * @param <RR> 連結されたプロセッサーの結果
+	 * @param after 結果をさらに処理するプロセッサー
+	 * @return 連結されたプロセッサー
+	 */
+	public default <RR> Processor<V, RR, Exception> andThen(Processor<? super R, RR, Exception> after) {
+		return value -> after.process(process(value));
+	}
+
+	/**
+	 * ジェネレーターに変換します。
+	 * 
+	 * @return ジェネレーター
+	 */
+	public default Generator<R, E> normalize(V value) {
+		return () -> process(value);
+	}
+
+	/**
+	 * 処理を行い、リザルトを生成します。
+	 * 
+	 * <p>
+	 * 非チェック例外が発生した時は、そのまま送出されます。
+	 * </p>
+	 * 
+	 * @param value
+	 * @return リザルト
+	 */
+	public default Result<R, E> getResult(V value) {
+		return normalize(value).getResult();
+	}
+
+	/**
 	 * 処理を行います。
 	 * 
 	 * <p>
@@ -82,25 +118,5 @@ public interface Processor<V, R, E extends Exception> {
 	 */
 	public default R ignore(V value) {
 		return normalize(value).ignore();
-	}
-
-	/**
-	 * 結果をさらに処理するプロセッサーと連結します。
-	 * 
-	 * @param <RR> 連結されたプロセッサーの結果
-	 * @param after 結果をさらに処理するプロセッサー
-	 * @return 連結されたプロセッサー
-	 */
-	public default <RR> Processor<V, RR, Exception> andThen(Processor<? super R, RR, Exception> after) {
-		return value -> after.process(process(value));
-	}
-
-	/**
-	 * ジェネレーターに変換します。
-	 * 
-	 * @return ジェネレーター
-	 */
-	public default Generator<R, E> normalize(V value) {
-		return () -> process(value);
 	}
 }

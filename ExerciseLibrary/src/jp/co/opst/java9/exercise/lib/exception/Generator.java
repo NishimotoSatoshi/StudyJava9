@@ -71,8 +71,8 @@ public interface Generator<R, E extends Exception> {
 			return Result.success(generate());
 		} catch (RuntimeException r) {
 			throw r;
-		} catch (Throwable t) {
-			@SuppressWarnings("unchecked") E exception = (E) t;
+		} catch (Exception e) {
+			@SuppressWarnings("unchecked") E exception = (E) e;
 			return Result.failure(exception);
 		}
 	}
@@ -92,8 +92,8 @@ public interface Generator<R, E extends Exception> {
 			return generate();
 		} catch (RuntimeException r) {
 			throw r;
-		} catch (Throwable t) {
-			throw new IllegalStateException(t);
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
 		}
 	}
 

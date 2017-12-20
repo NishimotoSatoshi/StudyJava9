@@ -46,29 +46,6 @@ public interface Invoker<E extends Exception> {
 	public void invoke() throws E;
 
 	/**
-	 * 処理を行います。
-	 * 
-	 * <p>
-	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
-	 * 非チェック例外が発生した時は、そのまま送出されます。
-	 * </p>
-	 */
-	public default void uncheck() {
-		normalize().uncheck();
-	}
-
-	/**
-	 * 処理を行います。
-	 * 
-	 * <p>
-	 * 例外が発生した時は、無視します。
-	 * </p>
-	 */
-	public default void ignore() {
-		normalize().ignore();
-	}
-
-	/**
 	 * 他のインボーカーとまとめます。
 	 * 
 	 * @param after 他のインボーカー
@@ -92,5 +69,42 @@ public interface Invoker<E extends Exception> {
 			invoke();
 			return null;
 		};
+	}
+
+	/**
+	 * 処理を行い、リザルトを生成します。
+	 * 
+	 * <p>
+	 * 非チェック例外が発生した時は、そのまま送出されます。
+	 * </p>
+	 * 
+	 * @param <R> 結果
+	 * @return リザルト
+	 */
+	public default <R> Result<R, E> getResult() {
+		return this.<R>normalize().getResult();
+	}
+
+	/**
+	 * 処理を行います。
+	 * 
+	 * <p>
+	 * チェック例外が発生した時は、IllegalStateExceptionを送出します。
+	 * 非チェック例外が発生した時は、そのまま送出されます。
+	 * </p>
+	 */
+	public default void uncheck() {
+		normalize().uncheck();
+	}
+
+	/**
+	 * 処理を行います。
+	 * 
+	 * <p>
+	 * 例外が発生した時は、無視します。
+	 * </p>
+	 */
+	public default void ignore() {
+		normalize().ignore();
 	}
 }

@@ -50,7 +50,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	 */
 	@Override
 	public final void onNext(T item) {
-		Try.uncheck(() -> model.accept(item));
+		Try.of(item).uncheck(model::accept);
 		subscription.request(context.getDemand());
 	}
 
@@ -61,7 +61,7 @@ public class SubscriberBase<T> implements Flow.Subscriber<T> {
 	 */
 	@Override
 	public final void onError(Throwable error) {
-		Try.ignore(() -> context.getErrorHandler().accept(error));
+		Try.of(error).ignore(context.getErrorHandler()::accept);
 		Try.ignore(model::end);
 		context.getDoneSignal().run();
 	}

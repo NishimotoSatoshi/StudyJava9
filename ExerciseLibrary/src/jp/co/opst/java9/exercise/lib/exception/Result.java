@@ -145,6 +145,24 @@ public final class Result<R, E extends Exception> {
 	}
 
 	/**
+	 * 例外が存在することを判定します。
+	 * 
+	 * @return 例外が存在する場合はtrue
+	 */
+	public boolean isError() {
+		return optionalException.isPresent();
+	}
+
+	/**
+	 * 例外が存在しないことを判定します。
+	 * 
+	 * @return 例外が存在しない場合はtrue
+	 */
+	public boolean isNotError() {
+		return !optionalException.isPresent();
+	}
+
+	/**
 	 * 結果が存在し、かつ条件と一致していることを判定します。
 	 * 
 	 * @param predicate 条件
@@ -161,23 +179,7 @@ public final class Result<R, E extends Exception> {
 	 * @return 結果が存在し、かつ条件と一致していない場合はtrue
 	 */
 	public boolean isResultNot(Predicate<? super R> predicate) {
-		return optionalResult.filter(predicate.negate()).isPresent();
-	}
-
-	/**
-	 * 結果および例外が存在しない場合、処理を行います。
-	 * 
-	 * @param <EE> 処理する関数で発生しうる例外
-	 * @param action 処理する関数
-	 * @return このインスタンス自身
-	 * @throws EE 処理する関数で例外が発生した場合
-	 */
-	public <EE extends Exception> Result<R, E> ifEmpty(Invoker<EE> action) throws EE {
-		if (isEmpty()) {
-			action.invoke();
-		}
-
-		return this;
+		return isResult(predicate.negate());
 	}
 
 	/**
@@ -187,46 +189,8 @@ public final class Result<R, E extends Exception> {
 	 * @return このインスタンス自身
 	 */
 	public Result<R, E> ifEmpty(Runnable action) {
-		return ifEmpty(Invoker.from(action));
-	}
-
-	/**
-	 * 結果または例外が存在する場合、処理を行います。
-	 * 
-	 * @param <EE> 処理する関数で発生しうる例外
-	 * @param action 処理する関数
-	 * @return このインスタンス自身
-	 * @throws EE 処理する関数で例外が発生した場合
-	 */
-	public <EE extends Exception> Result<R, E> ifNotEmpty(Acceptor<Result<? super R, ? super E>, EE> action) throws EE {
-		if (isNotEmpty()) {
-			action.accept(this);
-		}
-
-		return this;
-	}
-
-	/**
-	 * 結果または例外が存在する場合、処理を行います。
-	 * 
-	 * @param action 処理する関数
-	 * @return このインスタンス自身
-	 */
-	public Result<R, E> ifNotEmpty(Consumer<Result<? super R, ? super E>> action) {
-		return ifNotEmpty(Acceptor.from(action));
-	}
-
-	/**
-	 * 結果が存在する場合、処理を行います。
-	 * 
-	 * @param <EE> 処理する関数で発生しうる例外
-	 * @param action 処理する関数
-	 * @return このインスタンス自身
-	 * @throws EE 処理する関数で例外が発生した場合
-	 */
-	public <EE extends Exception> Result<R, E> ifPresent(Acceptor<? super R, EE> action) throws EE {
-		if (isPresent()) {
-			action.accept(optionalResult.get());
+		if (isEmpty()) {
+			action.run();
 		}
 
 		return this;
@@ -239,22 +203,7 @@ public final class Result<R, E extends Exception> {
 	 * @return このインスタンス自身
 	 */
 	public Result<R, E> ifPresent(Consumer<? super R> action) {
-		return ifPresent(Acceptor.from(action));
-	}
-
-	/**
-	 * 結果が存在しない場合、処理を行います。
-	 * 
-	 * @param <EE> 処理する関数で発生しうる例外
-	 * @param action 処理する関数
-	 * @return このインスタンス自身
-	 * @throws EE 処理する関数で例外が発生した場合
-	 */
-	public <EE extends Exception> Result<R, E> ifAbsent(Invoker<EE> action) throws EE {
-		if (isAbsent()) {
-			action.invoke();
-		}
-
+		optionalResult.ifPresent(action);
 		return this;
 	}
 
@@ -265,21 +214,33 @@ public final class Result<R, E extends Exception> {
 	 * @return このインスタンス自身
 	 */
 	public Result<R, E> ifAbsent(Runnable action) {
-		return ifAbsent(Invoker.from(action));
+		if (isAbsent()) {
+			action.run();
+		}
+
+		return this;
 	}
 
 	/**
-	 * 結果が存在し、かつ条件と一致している場合、処理を行います。
+	 * 例外が存在する場合、処理を行います。
 	 * 
-	 * @param <EE> 処理する関数で発生しうる例外
-	 * @param predicate 条件
 	 * @param action 処理する関数
 	 * @return このインスタンス自身
-	 * @throws EE 処理する関数で例外が発生した場合
 	 */
-	public <EE extends Exception> Result<R, E> ifResult(Predicate<? super R> predicate, Acceptor<? super R, EE> action) throws EE {
-		if (optionalResult.filter(predicate).isPresent()) {
-			action.accept(optionalResult.get());
+	public Result<R, E> ifError(Consumer<? super E> action) {
+		optionalException.ifPresent(action);
+		return this;
+	}
+
+	/**
+	 * 例外が存在しない場合、処理を行います。
+	 * 
+	 * @param action 処理する関数
+	 * @return このインスタンス自身
+	 */
+	public Result<R, E> ifNotError(Runnable action) {
+		if (isNotError()) {
+			action.run();
 		}
 
 		return this;
@@ -293,20 +254,8 @@ public final class Result<R, E extends Exception> {
 	 * @return このインスタンス自身
 	 */
 	public Result<R, E> ifResult(Predicate<? super R> predicate, Consumer<? super R> action) {
-		return ifResult(predicate, Acceptor.from(action));
-	}
-
-	/**
-	 * 結果が存在し、かつ条件と一致していない場合、処理を行います。
-	 * 
-	 * @param <EE> 処理する関数で発生しうる例外
-	 * @param predicate 条件
-	 * @param action 処理する関数
-	 * @return このインスタンス自身
-	 * @throws EE 処理する関数で例外が発生した場合
-	 */
-	public <EE extends Exception> Result<R, E> ifResultNot(Predicate<? super R> predicate, Acceptor<? super R, EE> action) throws EE {
-		return ifResult(predicate.negate(), action);
+		optionalResult.filter(predicate).ifPresent(action);
+		return this;
 	}
 
 	/**
